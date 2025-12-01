@@ -18,39 +18,40 @@
 
         body {
             margin: 0; padding: 0;
-            overflow: hidden; /* Kaydırma yok */
+            overflow: hidden;
             font-family: 'Fredoka', sans-serif;
             background: linear-gradient(135deg, #1e272e 0%, #485460 100%);
-            /* iOS Safari için tam ekran fix */
+            /* MOBİL İÇİN KRİTİK AYAR: Dinamik Yükseklik */
             height: 100vh; 
             height: 100dvh; 
             display: flex; flex-direction: column;
-            user-select: none; -webkit-user-select: none;
-            touch-action: none;
+            user-select: none; touch-action: none;
         }
 
-        /* --- ÜST GÜÇ BARI (Fixed Height) --- */
+        /* --- ÜST GÜÇ BARI (Sabit) --- */
         #tugOfWarBar {
             height: 24px; min-height: 24px; width: 100%; display: flex;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 50; background: #333;
-            overflow: hidden; /* Taşan beyaz çizgiyi kes */
-            flex-shrink: 0; /* Asla küçülme */
+            overflow: hidden; /* Taşan çizgiyi gizle */
+            flex-shrink: 0; /* Asla büzüşme */
         }
         #barP1 { height: 100%; background: var(--p1-color); width: 50%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: flex-start; padding-left: 10px; color: white; font-size: 11px; white-space: nowrap; font-weight:bold;}
         #barP2 { height: 100%; background: var(--p2-color); width: 50%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: #333; font-size: 11px; white-space: nowrap; font-weight:bold;}
         #barCenter { width: 4px; background: #fff; height: 100%; position: relative; z-index: 51; box-shadow: 0 0 10px white; }
 
-        /* --- ANA DÜZEN (Flex Column) --- */
+        /* --- ANA DÜZEN --- */
         #gameLayout {
             display: flex; flex-direction: column;
-            width: 100%; height: 100%; /* Kalan alanı doldur */
+            width: 100%; 
+            flex: 1; /* Kalan tüm yüksekliği al */
             padding: 10px; gap: 10px;
             overflow: hidden;
         }
 
-        /* --- HARİTA ALANI (Esnek) --- */
+        /* --- HARİTA (Esnek - Küçülebilir) --- */
         #canvasWrapper {
-            flex: 1; /* Mevcut boşluğun hepsini al */
+            flex: 1; /* Boş alanı doldur */
+            min-height: 0; /* Gerekirse küçülmesine izin ver! (Çok önemli) */
             width: 100%; 
             background: #81ecec;
             border-radius: 15px; 
@@ -59,32 +60,28 @@
             overflow: hidden; 
             border: 4px solid #fff;
             touch-action: none;
-            /* Mobilde minimum yükseklik garantisi */
-            min-height: 40%;
         }
 
         canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 10px; touch-action: none; }
         
-        /* --- KONTROL PANELİ (Sabit Alt) --- */
+        /* --- KONTROL PANELİ (Sabit - Alt) --- */
         #sidePanel {
-            /* Yükseklik içeriğe göre olsun ama çok büyümesin */
-            height: auto; 
-            flex-shrink: 0;
+            height: auto; /* İçeriği kadar yer kapla */
+            flex-shrink: 0; /* Asla büzüşme, haritayı büz */
             width: 100%;
             display: flex; 
             flex-direction: column; 
             gap: 8px;
-            padding-bottom: env(safe-area-inset-bottom); /* iPhone X+ alt çizgi payı */
+            /* iPhone alt çizgi güvenli alan */
+            padding-bottom: env(safe-area-inset-bottom);
+            margin-bottom: 5px;
         }
 
-        /* --- OYUNCU KARTLARI (Yan Yana) --- */
-        .cards-container {
-            display: flex; gap: 8px; width: 100%;
-        }
+        /* --- KARTLAR --- */
+        .cards-container { display: flex; gap: 8px; width: 100%; }
 
         .info-card {
-            flex: 1; /* Eşit genişlik */
-            background: var(--panel-bg); padding: 8px 10px; border-radius: 12px;
+            flex: 1; background: var(--panel-bg); padding: 8px 10px; border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;
             border-left: 5px solid #ddd; position: relative;
             display: flex; flex-direction: column; justify-content: center;
@@ -105,7 +102,7 @@
             font-weight: bold; margin-bottom: 2px;
         }
 
-        /* SONUÇ KUTUSU */
+        /* --- SONUÇ KUTUSU --- */
         #lastResultBox {
             background: white; padding: 6px; border-radius: 10px;
             text-align: center; font-size: 11px; color: #555;
@@ -113,11 +110,10 @@
             box-shadow: inset 0 0 5px rgba(0,0,0,0.05); border: 2px dashed #ccc;
             transition: all 0.3s;
         }
-        #lastResultBox b { margin-right: 5px; }
         #lastResultBox.win { background: #dff9fb; border-color: #00b894; color: #009432; }
         #lastResultBox.lose { background: #ffcccc; border-color: #d63031; color: #d63031; }
 
-        /* AKSİYON ALANI (Zar & Buton) */
+        /* --- ZAR VE BUTON --- */
         #actionArea {
             position: relative; height: 50px; width: 100%;
             display: flex; align-items: center; gap: 10px;
@@ -125,7 +121,7 @@
         
         .dice-container {
             width: 45px; height: 45px; perspective: 800px;
-            flex-shrink: 0; /* Zar büzüşmesin */
+            flex-shrink: 0;
         }
         .dice-box { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; }
         .dice-face {
@@ -169,7 +165,7 @@
 
         @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
-        /* Masaüstü İyileştirmesi */
+        /* Masaüstü */
         @media (min-width: 769px) {
             #gameLayout { flex-direction: row; }
             #sidePanel { width: 320px; height: 100%; justify-content: space-between; }
@@ -218,7 +214,6 @@
     </div>
 
     <div id="gameLayout">
-        
         <div id="canvasWrapper">
             <canvas id="bgCanvas"></canvas>
             <canvas id="mapCanvas"></canvas>
@@ -362,24 +357,50 @@ function finishSetup() {
 function resize() {
     const w = document.getElementById('canvasWrapper');
     [bgCanvas, mapCanvas, uiCanvas, fxCanvas].forEach(c => { c.width = w.clientWidth; c.height = w.clientHeight; });
-    if(gameState.started) { drawWorldMap(); drawInitialAreas(); }
+    if(gameState.started) { drawCuteMap(); drawInitialAreas(); }
 }
 window.addEventListener('resize', resize);
 
-function drawWorldMap() {
+// --- SEVİMLİ HARİTA (AĞAÇLAR GERİ GELDİ) ---
+function drawCuteMap() {
     ctxBg.clearRect(0,0,bgCanvas.width, bgCanvas.height);
-    // Grid
-    ctxBg.strokeStyle = 'rgba(255,255,255,0.1)'; ctxBg.lineWidth=1;
-    for(let i=0; i<bgCanvas.width; i+=60) { ctxBg.beginPath(); ctxBg.moveTo(i,0); ctxBg.lineTo(i,bgCanvas.height); ctxBg.stroke(); }
-    for(let i=0; i<bgCanvas.height; i+=60) { ctxBg.beginPath(); ctxBg.moveTo(0,i); ctxBg.lineTo(bgCanvas.width,i); ctxBg.stroke(); }
-    // Kıtalar
-    ctxBg.fillStyle = '#badc58'; 
-    const lands = [{x:0.2,y:0.3,r:80}, {x:0.7,y:0.3,r:90}, {x:0.5,y:0.7,r:70}];
+    
+    // Su Rengi
+    // Grid (Hafif)
+    ctxBg.strokeStyle = 'rgba(255,255,255,0.15)'; ctxBg.lineWidth=1;
+    for(let i=0; i<bgCanvas.width; i+=50) { ctxBg.beginPath(); ctxBg.moveTo(i,0); ctxBg.lineTo(i,bgCanvas.height); ctxBg.stroke(); }
+    for(let i=0; i<bgCanvas.height; i+=50) { ctxBg.beginPath(); ctxBg.moveTo(0,i); ctxBg.lineTo(bgCanvas.width,i); ctxBg.stroke(); }
+
+    // Kıtalar (Yeşil Adalar)
+    ctxBg.fillStyle = '#b8e994'; // Açık yeşil
+    const lands = [
+        {x:0.2, y:0.3, r:70}, {x:0.7, y:0.3, r:80}, // Üstler
+        {x:0.5, y:0.65, r:60}, {x:0.8, y:0.7, r:50} // Altlar
+    ];
     lands.forEach(l => {
-        let cx = l.x*bgCanvas.width; let cy=l.y*bgCanvas.height;
-        if(Math.hypot(cx,cy-bgCanvas.height)<220 || Math.hypot(cx-bgCanvas.width, cy)<220) return;
-        ctxBg.beginPath(); ctxBg.arc(cx,cy, l.r, 0, Math.PI*2); ctxBg.fill();
+        let cx = l.x*bgCanvas.width; let cy = l.y*bgCanvas.height;
+        // Oyuncu alanlarına yakınsa çizme
+        if(Math.hypot(cx, cy-bgCanvas.height)<200 || Math.hypot(cx-bgCanvas.width, cy)<200) return;
+        
+        ctxBg.beginPath();
+        // Amip şekli (Sevimli)
+        for(let a=0; a<Math.PI*2; a+=0.5) {
+            let r = l.r + Math.random()*20;
+            ctxBg.lineTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r);
+        }
+        ctxBg.fill();
     });
+
+    // Süslemeler (Emoji)
+    ctxBg.font = "24px Arial"; ctxBg.textAlign="center";
+    const items = ["🌲", "🌳", "⛰️", "🏠", "⛺"];
+    for(let i=0; i<15; i++) {
+        let x = Math.random()*bgCanvas.width;
+        let y = Math.random()*bgCanvas.height;
+        // Sadece karaya (yeşile) veya boşluğa koy, ama oyuncu üstüne koyma
+        if(Math.hypot(x, y-bgCanvas.height)<220 || Math.hypot(x-bgCanvas.width, y)<220) continue;
+        ctxBg.fillText(items[Math.floor(Math.random()*items.length)], x, y);
+    }
 }
 
 function drawInitialAreas() {
@@ -387,7 +408,7 @@ function drawInitialAreas() {
     ctxMap.fillStyle = player2.color; ctxMap.beginPath(); ctxMap.arc(mapCanvas.width, 0, 150, 0, Math.PI*2); ctxMap.fill();
 }
 
-// --- GİRİŞ CİHAZLARI (TOUCH & MOUSE) ---
+// --- GİRİŞ CİHAZLARI ---
 function getPos(e) {
     const r = uiCanvas.getBoundingClientRect();
     let x, y;
@@ -399,23 +420,18 @@ function getPos(e) {
     return { x: x - r.left, y: y - r.top };
 }
 
-// Event Listeners (Universal)
 uiCanvas.addEventListener('mousedown', startD);
 uiCanvas.addEventListener('touchstart', startD, {passive: false});
-
 uiCanvas.addEventListener('mousemove', moveD);
 uiCanvas.addEventListener('touchmove', moveD, {passive: false});
-
 uiCanvas.addEventListener('mouseup', endD);
 uiCanvas.addEventListener('touchend', endD);
 
 function startD(e) {
     if(!gameState.started || gameState.canRoll || gameState.isRolling) return;
-    if(e.cancelable) e.preventDefault(); // Mobilde scrollu engelle
-    
+    if(e.cancelable) e.preventDefault(); 
     const p = getPos(e);
     
-    // Alan Kontrolü
     const px = ctxMap.getImageData(p.x, p.y, 1, 1).data;
     const isP1 = (gameState.turn === 'p1' && px[0] > px[2]);
     const isP2 = (gameState.turn === 'p2' && px[2] > px[0]);
@@ -430,7 +446,6 @@ function startD(e) {
 function moveD(e) {
     if(!gameState.isDrawing) return;
     if(e.cancelable) e.preventDefault();
-    
     const p = getPos(e);
     gameState.pathPoints.push(p);
     
@@ -458,6 +473,7 @@ function endD() {
     if(!gameState.isDrawing) return;
     gameState.isDrawing = false;
     ctxUi.closePath();
+    ctxUi.fillStyle = 'rgba(0,0,0,0.1)'; ctxUi.fill();
     
     const area = calculatePolyArea(gameState.pathPoints);
     const maxAllowed = gameState.scores[gameState.turn] * gameState.limitRatio;
@@ -466,12 +482,11 @@ function endD() {
 
     if(area < 100) { ctxUi.clearRect(0,0,uiCanvas.width, uiCanvas.height); return; }
     if(area > maxAllowed) { 
-        alert("Çok büyük alan seçtin! Sadece gücün kadar alan alabilirsin."); 
+        alert("Sınırı aştın!"); 
         ctxUi.clearRect(0,0,uiCanvas.width, uiCanvas.height); 
         return; 
     }
     
-    ctxUi.fillStyle = 'rgba(0,0,0,0.1)'; ctxUi.fill();
     gameState.canRoll = true;
     const btn = document.getElementById('rollBtn');
     btn.classList.add('ready');
@@ -479,12 +494,10 @@ function endD() {
     playSound('ready');
 }
 
-// --- ZAR ---
 document.getElementById('rollBtn').addEventListener('click', () => {
     if(!gameState.canRoll) return;
     gameState.isRolling = true;
     document.getElementById('rollBtn').classList.remove('ready');
-    
     const target = Math.floor(Math.random()*6)+1;
     animateDice(target);
 });
@@ -492,15 +505,12 @@ document.getElementById('rollBtn').addEventListener('click', () => {
 function animateDice(target) {
     const box = document.getElementById('gameDice');
     let frame = 0;
-    
     const loop = setInterval(() => {
         frame++;
         const rx = Math.random()*360 + frame*10;
         const ry = Math.random()*360 + frame*10;
-        
         box.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) scale(1.1)`;
         if(frame%5===0) playSound('tick');
-
         if(frame >= 60) {
             clearInterval(loop);
             let tx=0, ty=0;
@@ -520,7 +530,6 @@ function processResult(res) {
     
     let scale = 1, mode = 'source-over', msg = "", sound = "win", color = player.color;
 
-    // --- 1-6 MANTIĞI ---
     switch(res) {
         case 1: scale=1; mode='source-over'; msg="TAM İSABET! Alanı kaptın."; sound='win'; break;
         case 2: scale=1; mode='destination-out'; msg="KAYIP! Seçtiğin yer silindi."; sound='lose'; break;
@@ -534,18 +543,13 @@ function processResult(res) {
     spawnParticles(center.x, center.y, mode==='source-over'?color:'#555', scale*20);
     
     ctxMap.save();
-    ctxMap.translate(center.x, center.y);
-    ctxMap.scale(scale, scale);
-    ctxMap.translate(-center.x, -center.y);
-    
+    ctxMap.translate(center.x, center.y); ctxMap.scale(scale, scale); ctxMap.translate(-center.x, -center.y);
     ctxMap.globalCompositeOperation = mode;
     ctxMap.fillStyle = color;
     ctxMap.beginPath();
     ctxMap.moveTo(gameState.pathPoints[0].x, gameState.pathPoints[0].y);
     for(let p of gameState.pathPoints) ctxMap.lineTo(p.x, p.y);
-    ctxMap.closePath();
-    ctxMap.fill();
-    
+    ctxMap.closePath(); ctxMap.fill();
     ctxMap.restore();
     ctxMap.globalCompositeOperation = 'source-over';
 
@@ -560,7 +564,6 @@ function processResult(res) {
     }, 1500);
 }
 
-// --- HESAPLAMALAR ---
 function getCentroid(pts) {
     let x=0, y=0; for(let p of pts){x+=p.x; y+=p.y;}
     return {x:x/pts.length, y:y/pts.length};
@@ -576,31 +579,21 @@ function calculatePolyArea(pts) {
 
 function updateScores() {
     if (!gameState.readyToPlay) return;
-
     const d = ctxMap.getImageData(0,0,mapCanvas.width, mapCanvas.height).data;
     let s1=0, s2=0;
-    // Step değerini 16 yaptık (daha hassas) -> 4 byte (RGBA) * 4 piksel atlama = 16
     for(let i=0; i<d.length; i+=16) {
         if(d[i+3]>50) { if(d[i]>d[i+2]) s1++; else s2++; }
     }
-    
-    const realS1 = s1 * 4; 
-    const realS2 = s2 * 4;
-
-    gameState.scores.p1 = realS1;
-    gameState.scores.p2 = realS2;
-    
+    const realS1 = s1 * 4; const realS2 = s2 * 4;
+    gameState.scores.p1 = realS1; gameState.scores.p2 = realS2;
     document.getElementById('p1Score').innerText = Math.floor(realS1/100) + " br";
     document.getElementById('p2Score').innerText = Math.floor(realS2/100) + " br";
-    
-    // Bar
     const total = realS1 + realS2 + 1;
     document.getElementById('barP1').style.width = (realS1/total)*100+"%";
     document.getElementById('barP1').innerText = player1.name;
     document.getElementById('barP2').style.width = (realS2/total)*100+"%";
     document.getElementById('barP2').innerText = player2.name;
 
-    // Game Over
     if(gameState.readyToPlay) {
         if(realS1 < 1000) { alert("🏆 " + player2.name + " KAZANDI!"); location.reload(); }
         if(realS2 < 1000) { alert("🏆 " + player1.name + " KAZANDI!"); location.reload(); }
@@ -616,7 +609,6 @@ function updateTurnIndicator() {
     const badge = document.getElementById('turnBadge');
     document.getElementById('p1Card').classList.remove('active');
     document.getElementById('p2Card').classList.remove('active');
-    
     if(gameState.turn === 'p1') {
         badge.innerHTML = `Sıra: ${player1.flag} ${player1.name}`;
         badge.style.background = player1.color;
@@ -628,7 +620,6 @@ function updateTurnIndicator() {
     }
 }
 
-// --- EFEKTLER ---
 let particles = [];
 function spawnParticles(x,y,c, count=20) {
     for(let i=0;i<count;i++) particles.push({x:x,y:y,vx:(Math.random()-.5)*15,vy:(Math.random()-.5)*15,life:1,c:c});
@@ -644,7 +635,6 @@ function loopFx() {
     requestAnimationFrame(loopFx);
 }
 loopFx();
-
 </script>
 </body>
 </html>
