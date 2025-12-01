@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Boyama Savaşları: Global Risk</title>
+    <title>Boyama Savaşları: Mobil</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
 
         :root {
             --bg-ocean: #2c3e50;
-            --p1-color: #ff7675; /* Pastel Kırmızı */
-            --p2-color: #74b9ff; /* Pastel Mavi */
+            --p1-color: #ff7675;
+            --p2-color: #74b9ff;
             --panel-bg: rgba(255, 255, 255, 0.95);
         }
 
@@ -18,74 +18,79 @@
             margin: 0; overflow: hidden; font-family: 'Fredoka', sans-serif;
             background: linear-gradient(135deg, #1e272e 0%, #485460 100%);
             display: flex; flex-direction: column;
-            height: 100vh; user-select: none; touch-action: none;
+            height: 100vh; width: 100vw;
+            user-select: none; touch-action: none; /* Mobilde kaydırmayı kapat */
+            overscroll-behavior: none; /* Sayfa yenileme çekmesini kapat */
         }
 
         /* --- ÜST GÜÇ BARI --- */
         #tugOfWarBar {
-            width: 100%; height: 24px; display: flex;
+            width: 100%; height: 20px; display: flex; flex-shrink: 0;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 50; background: #333;
         }
-        #barP1 { height: 100%; background: var(--p1-color); width: 50%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: flex-start; padding-left: 10px; color: white; font-size: 11px; white-space: nowrap; overflow: hidden; font-weight:bold;}
-        #barP2 { height: 100%; background: var(--p2-color); width: 50%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: #333; font-size: 11px; white-space: nowrap; overflow: hidden; font-weight:bold;}
+        #barP1 { height: 100%; background: var(--p1-color); width: 50%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: flex-start; padding-left: 10px; color: white; font-size: 10px; white-space: nowrap; overflow: hidden; font-weight:bold;}
+        #barP2 { height: 100%; background: var(--p2-color); width: 50%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: #333; font-size: 10px; white-space: nowrap; overflow: hidden; font-weight:bold;}
         
-        /* --- OYUN ALANI --- */
+        /* --- OYUN DÜZENİ --- */
         #gameLayout {
-            display: flex; gap: 15px; align-items: center; justify-content: center;
-            flex-grow: 1; padding: 15px; width: 100%; box-sizing: border-box;
+            display: flex; gap: 10px; align-items: center; justify-content: center;
+            flex-grow: 1; padding: 10px; width: 100%; box-sizing: border-box;
+            height: 100%; /* Tam boy */
         }
 
         #canvasWrapper {
-            flex-grow: 1; height: 100%; background: #81ecec; /* Okyanus Rengi */
-            border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            position: relative; overflow: hidden; border: 6px solid #fff;
+            flex-grow: 1; height: 100%; width: 100%; background: #81ecec;
+            border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden; border: 4px solid #fff;
+            touch-action: none; /* Canvas içinde kaydırma yok */
         }
 
-        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 14px; }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 10px; touch-action: none; }
         #uiCanvas { cursor: crosshair; }
 
-        /* --- SAĞ PANEL --- */
+        /* --- KONTROL PANELİ --- */
         #sidePanel {
-            width: 320px; display: flex; flex-direction: column; gap: 10px; height: 100%;
+            width: 300px; display: flex; flex-direction: column; gap: 8px; height: 100%;
+            flex-shrink: 0;
         }
 
         .info-card {
-            background: var(--panel-bg); padding: 10px 15px; border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s;
-            border-left: 6px solid #ddd; position: relative;
+            background: var(--panel-bg); padding: 8px 12px; border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;
+            border-left: 5px solid #ddd; position: relative;
         }
-        .player-card.active { transform: scale(1.02); border-color: gold !important; box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+        .player-card.active { transform: scale(1.02); border-color: gold !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
         
-        .card-content { display: flex; align-items: center; gap: 10px; }
-        .flag { font-size: 26px; }
-        .stats h3 { margin: 0; font-size: 15px; color: #2d3436; }
-        .stats p { margin: 0; font-size: 13px; color: #636e72; font-weight: bold; }
+        .card-content { display: flex; align-items: center; gap: 8px; }
+        .flag { font-size: 22px; }
+        .stats h3 { margin: 0; font-size: 13px; color: #2d3436; }
+        .stats p { margin: 0; font-size: 11px; color: #636e72; font-weight: bold; }
 
-        .limit-bar-bg { width: 100%; height: 6px; background: #eee; border-radius: 3px; margin-top: 5px; overflow: hidden; border:1px solid #ccc;}
+        .limit-bar-bg { width: 100%; height: 4px; background: #eee; border-radius: 2px; margin-top: 4px; overflow: hidden; border:1px solid #ccc;}
         .limit-bar-fill { height: 100%; width: 0%; background: #00b894; transition: width 0.1s; }
 
         #turnBadge {
-            background: #6c5ce7; color: white; text-align: center; padding: 10px;
-            border-radius: 12px; font-size: 15px; box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            background: #6c5ce7; color: white; text-align: center; padding: 8px;
+            border-radius: 10px; font-size: 13px; box-shadow: 0 3px 0 rgba(0,0,0,0.1);
         }
 
         /* SONUÇ KUTUSU */
         #lastResultBox {
-            background: white; padding: 10px; border-radius: 15px;
-            text-align: center; font-size: 13px; color: #555;
-            min-height: 50px; display: flex; align-items: center; justify-content: center; flex-direction: column;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05); border: 2px dashed #ccc;
+            background: white; padding: 8px; border-radius: 12px;
+            text-align: center; font-size: 12px; color: #555;
+            min-height: 40px; display: flex; align-items: center; justify-content: center; flex-direction: column;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05); border: 2px dashed #ccc;
             transition: all 0.3s;
         }
-        #lastResultBox b { font-size: 16px; display: block; margin-bottom: 2px;}
+        #lastResultBox b { font-size: 14px; display: block; margin-bottom: 2px;}
         #lastResultBox.win { background: #dff9fb; border-color: #00b894; color: #009432; }
         #lastResultBox.lose { background: #ffcccc; border-color: #d63031; color: #d63031; }
 
         /* ZAR ALANI */
-        #actionArea { margin-top: auto; text-align: center; position: relative; height: 130px; }
+        #actionArea { margin-top: auto; text-align: center; position: relative; height: 100px; }
         
         .dice-container {
-            position: absolute; top: -30px; left: 50%; transform: translateX(-50%) scale(1.3);
+            position: absolute; top: -30px; left: 50%; transform: translateX(-50%) scale(1.1);
             perspective: 1000px; width: 60px; height: 60px; z-index: 10;
         }
         .dice-box { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; }
@@ -100,12 +105,12 @@
         .df5 { transform: rotateX(90deg) translateZ(30px); } .df6 { transform: rotateX(-90deg) translateZ(30px); }
 
         #rollBtn {
-            position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px;
-            border: none; border-radius: 15px; background: #dfe6e9; color: #636e72;
-            font-size: 16px; font-weight: bold; cursor: not-allowed; transition: all 0.3s;
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 12px;
+            border: none; border-radius: 12px; background: #dfe6e9; color: #636e72;
+            font-size: 14px; font-weight: bold; cursor: not-allowed; transition: all 0.3s;
         }
-        #rollBtn.ready { background: #0984e3; color: white; cursor: pointer; box-shadow: 0 6px 0 #074f83; animation: pulseBtn 1s infinite; }
-        #rollBtn:active { transform: translateY(4px); box-shadow: 0 2px 0 #074f83; }
+        #rollBtn.ready { background: #0984e3; color: white; cursor: pointer; box-shadow: 0 4px 0 #074f83; animation: pulseBtn 1s infinite; }
+        #rollBtn:active { transform: translateY(4px); box-shadow: 0 1px 0 #074f83; }
 
         /* MODALS */
         .modal-overlay {
@@ -115,25 +120,99 @@
             opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
-        .modal-card { background: white; padding: 30px; border-radius: 30px; text-align: center; max-width: 500px; width: 90%; transform: scale(0.8); transition: transform 0.3s; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .modal-card { background: white; padding: 25px; border-radius: 25px; text-align: center; max-width: 500px; width: 85%; transform: scale(0.8); transition: transform 0.3s; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .modal-overlay.active .modal-card { transform: scale(1); }
 
-        .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-        .player-select { background: #f8f9fa; padding: 15px; border-radius: 15px; }
-        .primary-btn { background: linear-gradient(45deg, #0984e3, #74b9ff); color: white; border: none; padding: 12px 40px; font-size: 18px; border-radius: 50px; cursor: pointer; box-shadow: 0 5px 15px rgba(9, 132, 227, 0.4); }
+        .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .player-select { background: #f8f9fa; padding: 10px; border-radius: 12px; }
+        .primary-btn { background: linear-gradient(45deg, #0984e3, #74b9ff); color: white; border: none; padding: 12px 30px; font-size: 16px; border-radius: 50px; cursor: pointer; box-shadow: 0 5px 15px rgba(9, 132, 227, 0.4); width: 100%; margin-top: 10px;}
 
-        .rules-box { text-align:left; font-size:13px; color:#555; background:#f1f2f6; padding:15px; border-radius:10px; margin-bottom:20px; line-height: 1.6; border: 1px solid #ddd; }
+        .rules-box { text-align:left; font-size:12px; color:#555; background:#f1f2f6; padding:12px; border-radius:10px; margin-bottom:15px; line-height: 1.5; border: 1px solid #ddd; }
         .rule-row { display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; padding: 3px 0; }
         .rule-win { color: #009432; font-weight: bold; }
         .rule-lose { color: #d63031; font-weight: bold; }
 
         @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
+        /* --- MOBİL UYUMLULUK (Responsive) --- */
         @media (max-width: 768px) {
-            #gameLayout { flex-direction: column; height: auto; }
-            #sidePanel { width: 100%; height: auto; flex-direction: column; }
-            #actionArea { height: 100px; }
-            .dice-container { top: -20px; transform: translateX(-50%) scale(1.2); }
+            #gameLayout {
+                flex-direction: column; /* Alt alta diz */
+                padding: 5px;
+                gap: 5px;
+            }
+
+            #canvasWrapper {
+                width: 100%;
+                /* Ekranın yarısından fazlasını haritaya ver */
+                flex: 2; 
+                min-height: 50vh;
+            }
+
+            #sidePanel {
+                width: 100%;
+                flex: 1; /* Kalan alan */
+                flex-direction: row; /* Kartları yan yana koy */
+                flex-wrap: wrap;
+                align-content: flex-start;
+                gap: 5px;
+            }
+
+            /* Mobilde kartları küçült ve yan yana diz */
+            .info-card {
+                flex: 1;
+                min-width: 40%;
+                padding: 5px;
+            }
+            
+            .card-content { gap: 5px; }
+            .flag { font-size: 18px; }
+            .stats h3 { font-size: 12px; }
+            .stats p { font-size: 10px; }
+
+            /* Sıra rozetini tam genişlik yap */
+            #turnBadge { width: 100%; padding: 5px; font-size: 12px; order: -1; }
+
+            /* Sonuç kutusunu küçült */
+            #lastResultBox {
+                width: 100%;
+                min-height: 30px;
+                padding: 5px;
+                font-size: 11px;
+                order: 2;
+            }
+            #lastResultBox b { font-size: 12px; margin-bottom: 0; display: inline; margin-right: 5px; }
+
+            /* Zar ve Buton alanını sabitle */
+            #actionArea {
+                width: 100%;
+                height: 50px; /* Daha kısa */
+                order: 3;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 5px;
+            }
+
+            .dice-container {
+                position: relative;
+                top: 0; left: 0;
+                transform: none;
+                width: 40px; height: 40px;
+            }
+            .dice-face { font-size: 16px; border-width: 1px; border-radius: 5px; }
+            .df1 { transform: translateZ(20px); } .df2 { transform: rotateY(180deg) translateZ(20px); }
+            .df3 { transform: rotateY(90deg) translateZ(20px); } .df4 { transform: rotateY(-90deg) translateZ(20px); }
+            .df5 { transform: rotateX(90deg) translateZ(20px); } .df6 { transform: rotateX(-90deg) translateZ(20px); }
+
+            #rollBtn {
+                position: relative;
+                width: auto;
+                flex-grow: 1;
+                padding: 10px;
+                font-size: 13px;
+                height: 40px;
+            }
         }
     </style>
 </head>
@@ -141,30 +220,27 @@
 
     <div id="setupModal" class="modal-overlay active">
         <div class="modal-card">
-            <h1 style="color:#2c3e50; margin:0;">🌍 Boyama Savaşları</h1>
-            <p style="color:#7f8c8d;">Risk ve Strateji</p>
+            <h2 style="color:#2c3e50; margin:0 0 10px 0;">🌍 Boyama Savaşları</h2>
+            <p style="color:#7f8c8d; font-size:14px; margin:0;">Mobil Sürüm</p>
             
             <div class="setup-grid">
                 <div class="player-select" style="border: 2px solid var(--p1-color);">
-                    <h4 style="margin:0; color:#ff6b6b">Oyuncu 1</h4>
-                    <div style="font-size:40px; margin:10px 0;" id="p1FlagPreview">❓</div>
+                    <div style="font-size:30px;" id="p1FlagPreview">❓</div>
                     <select id="p1Select" onchange="updatePreview('p1')" style="width:100%"></select>
                 </div>
                 <div class="player-select" style="border: 2px solid var(--p2-color);">
-                    <h4 style="margin:0; color:#48dbfb">Oyuncu 2</h4>
-                    <div style="font-size:40px; margin:10px 0;" id="p2FlagPreview">❓</div>
+                    <div style="font-size:30px;" id="p2FlagPreview">❓</div>
                     <select id="p2Select" onchange="updatePreview('p2')" style="width:100%"></select>
                 </div>
             </div>
             
             <div class="rules-box">
-                <div style="margin-bottom:5px; text-align:center;"><b>🎲 ZAR SONUÇLARI</b></div>
-                <div class="rule-row"><span>1️⃣</span> <span class="rule-win">Tam Kazan (Seçtiğini Al)</span></div>
-                <div class="rule-row"><span>2️⃣</span> <span class="rule-lose">Tam Kaybet (Seçtiğin Silinir)</span></div>
-                <div class="rule-row"><span>3️⃣</span> <span class="rule-win">🔥 2 KAT KAZAN (Büyür)</span></div>
-                <div class="rule-row"><span>4️⃣</span> <span class="rule-lose">💀 2 KAT KAYBET (Büyüyüp Silinir)</span></div>
-                <div class="rule-row"><span>5️⃣</span> <span class="rule-win">½ Yarım Kazan (Küçülür)</span></div>
-                <div class="rule-row"><span>6️⃣</span> <span class="rule-lose">½ Yarım Kaybet (Küçülüp Silinir)</span></div>
+                <div class="rule-row"><span>1️⃣</span> <span class="rule-win">Tam Kazan</span></div>
+                <div class="rule-row"><span>2️⃣</span> <span class="rule-lose">Tam Silinir</span></div>
+                <div class="rule-row"><span>3️⃣</span> <span class="rule-win">2 KAT KAZAN</span></div>
+                <div class="rule-row"><span>4️⃣</span> <span class="rule-lose">2 KAT KAYBET</span></div>
+                <div class="rule-row"><span>5️⃣</span> <span class="rule-win">½ Yarım Kazan</span></div>
+                <div class="rule-row"><span>6️⃣</span> <span class="rule-lose">½ Yarım Kaybet</span></div>
             </div>
 
             <button class="primary-btn" onclick="finishSetup()">BAŞLAT 🚀</button>
@@ -179,7 +255,11 @@
 
     <div id="gameLayout">
         <div id="canvasWrapper">
-            <canvas id="bgCanvas"></canvas> <canvas id="mapCanvas"></canvas> <canvas id="uiCanvas"></canvas> <canvas id="fxCanvas" style="pointer-events: none;"></canvas> </div>
+            <canvas id="bgCanvas"></canvas>
+            <canvas id="mapCanvas"></canvas>
+            <canvas id="uiCanvas"></canvas>
+            <canvas id="fxCanvas" style="pointer-events: none;"></canvas>
+        </div>
 
         <div id="sidePanel">
             <div id="turnBadge">Sıra: Bekleniyor</div>
@@ -188,7 +268,7 @@
                 <div class="card-content">
                     <div class="flag" id="p1FlagDisp">🏳️</div>
                     <div class="stats" style="flex-grow:1">
-                        <h3 id="p1NameDisp">Oyuncu 1</h3>
+                        <h3 id="p1NameDisp">P1</h3>
                         <p id="p1Score">---</p>
                     </div>
                 </div>
@@ -199,14 +279,14 @@
                 <div class="card-content">
                     <div class="flag" id="p2FlagDisp">🏳️</div>
                     <div class="stats" style="flex-grow:1">
-                        <h3 id="p2NameDisp">Oyuncu 2</h3>
+                        <h3 id="p2NameDisp">P2</h3>
                         <p id="p2Score">---</p>
                     </div>
                 </div>
                 <div class="limit-bar-bg"><div id="p2LimitBar" class="limit-bar-fill"></div></div>
             </div>
 
-            <div id="lastResultBox">Savaş başlıyor...</div>
+            <div id="lastResultBox">Başla...</div>
 
             <div id="actionArea">
                 <div class="dice-container">
@@ -219,22 +299,20 @@
                         <div class="dice-face df6">6</div>
                     </div>
                 </div>
-                <button id="rollBtn">ÖNCE ALAN ÇİZ 🖌️</button>
+                <button id="rollBtn">ALAN ÇİZ 👇</button>
             </div>
         </div>
     </div>
 
 <script>
-// --- VERİ ---
+// --- AYARLAR ---
 const COUNTRIES = [
     { code: 'TR', name: 'Türkiye', flag: '🇹🇷' }, { code: 'AZ', name: 'Azerbaycan', flag: '🇦🇿' },
     { code: 'US', name: 'ABD', flag: '🇺🇸' }, { code: 'DE', name: 'Almanya', flag: '🇩🇪' },
     { code: 'JP', name: 'Japonya', flag: '🇯🇵' }, { code: 'KR', name: 'Güney Kore', flag: '🇰🇷' },
     { code: 'BR', name: 'Brezilya', flag: '🇧🇷' }, { code: 'RU', name: 'Rusya', flag: '🇷🇺' },
     { code: 'CN', name: 'Çin', flag: '🇨🇳' }, { code: 'FR', name: 'Fransa', flag: '🇫🇷' },
-    { code: 'IN', name: 'Hindistan', flag: '🇮🇳' }, { code: 'GB', name: 'İngiltere', flag: '🇬🇧' },
-    { code: 'IT', name: 'İtalya', flag: '🇮🇹' }, { code: 'ES', name: 'İspanya', flag: '🇪🇸' },
-    { code: 'MX', name: 'Meksika', flag: '🇲🇽' }, { code: 'CA', name: 'Kanada', flag: '🇨🇦' }
+    { code: 'IN', name: 'Hindistan', flag: '🇮🇳' }, { code: 'GB', name: 'İngiltere', flag: '🇬🇧' }
 ];
 
 const p1Sel = document.getElementById('p1Select');
@@ -251,17 +329,17 @@ function updatePreview(p) {
 let player1 = {}, player2 = {};
 let gameState = {
     started: false,
-    readyToPlay: false, // BUG FIX: Başlangıçta game over olmasın
+    readyToPlay: false,
     turn: 'p1',
     isDrawing: false,
     pathPoints: [],
     canRoll: false,
     isRolling: false,
-    scores: { p1: 100000, p2: 100000 }, // Başlangıçta yüksek değer (güvenli)
-    limitRatio: 1.0 // TAM Kendi alanı kadar
+    scores: { p1: 100000, p2: 100000 },
+    limitRatio: 1.0 // Sınır tam kendi alanı kadar
 };
 
-// --- SES SİSTEMİ (Sweet Sounds) ---
+// --- SES ---
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playTone(freq, type, duration, delay=0, vol=0.1) {
     if(audioCtx.state==='suspended') audioCtx.resume();
@@ -273,20 +351,16 @@ function playTone(freq, type, duration, delay=0, vol=0.1) {
     o.connect(g); g.connect(audioCtx.destination);
     o.start(audioCtx.currentTime+delay); o.stop(audioCtx.currentTime+delay+duration);
 }
-
 function playSound(ev) {
     if(ev==='draw') playTone(400+Math.random()*200, 'sine', 0.05, 0, 0.05);
     if(ev==='tick') playTone(800, 'square', 0.02, 0, 0.05);
     if(ev==='ready') playTone(1000, 'sine', 0.2);
-    if(ev==='win') { playTone(523.25, 'sine', 0.3, 0, 0.2); playTone(659.25, 'sine', 0.3, 0.1, 0.2); }
-    if(ev==='winBig') { playTone(523.25, 'triangle', 0.3, 0, 0.2); playTone(1046.50, 'triangle', 0.5, 0.2, 0.2); }
-    if(ev==='lose') { playTone(400, 'sine', 0.3, 0, 0.2); playTone(300, 'sine', 0.5, 0.1, 0.2); }
-    if(ev==='loseBig') { playTone(300, 'sawtooth', 0.4, 0, 0.1); playTone(150, 'sawtooth', 0.6, 0.2, 0.1); }
-    if(ev==='start') { playTone(600, 'sine', 0.5); }
+    if(ev==='win') { playTone(523, 'sine', 0.3); playTone(659, 'sine', 0.3, 0.1); }
+    if(ev==='lose') { playTone(300, 'sawtooth', 0.3); playTone(200, 'sawtooth', 0.3, 0.1); }
     if(ev==='limit') { playTone(200, 'sawtooth', 0.1); }
 }
 
-// --- CANVAS SETUP ---
+// --- CANVAS ---
 const bgCanvas = document.getElementById('bgCanvas');
 const mapCanvas = document.getElementById('mapCanvas');
 const uiCanvas = document.getElementById('uiCanvas');
@@ -310,17 +384,12 @@ function finishSetup() {
     gameState.started = true;
     resize();
     
-    // SAFE INIT: Harita oturduktan sonra puan hesapla
     setTimeout(() => { 
         drawInitialAreas(); 
-        setTimeout(() => {
-            updateScores(); 
-            gameState.readyToPlay = true; 
-        }, 300);
+        setTimeout(() => { updateScores(); gameState.readyToPlay = true; }, 300);
     }, 100);
 
     updateTurnIndicator();
-    playSound('start');
 }
 
 function resize() {
@@ -332,60 +401,57 @@ window.addEventListener('resize', resize);
 
 function drawWorldMap() {
     ctxBg.clearRect(0,0,bgCanvas.width, bgCanvas.height);
-    
     // Grid
     ctxBg.strokeStyle = 'rgba(255,255,255,0.1)'; ctxBg.lineWidth=1;
     for(let i=0; i<bgCanvas.width; i+=60) { ctxBg.beginPath(); ctxBg.moveTo(i,0); ctxBg.lineTo(i,bgCanvas.height); ctxBg.stroke(); }
     for(let i=0; i<bgCanvas.height; i+=60) { ctxBg.beginPath(); ctxBg.moveTo(0,i); ctxBg.lineTo(bgCanvas.width,i); ctxBg.stroke(); }
-
-    // Kıtalar (Yeşil Alanlar)
-    ctxBg.fillStyle = '#badc58'; // Kara
-    const lands = [{x:0.2,y:0.3,r:90}, {x:0.7,y:0.3,r:100}, {x:0.6,y:0.7,r:80}, {x:0.25,y:0.65,r:70}];
+    // Kıtalar
+    ctxBg.fillStyle = '#badc58'; 
+    const lands = [{x:0.2,y:0.3,r:80}, {x:0.7,y:0.3,r:90}, {x:0.5,y:0.7,r:70}];
     lands.forEach(l => {
         let cx = l.x*bgCanvas.width; let cy=l.y*bgCanvas.height;
-        if(Math.hypot(cx,cy-bgCanvas.height)<250 || Math.hypot(cx-bgCanvas.width, cy)<250) return;
-        ctxBg.beginPath();
-        for(let a=0; a<Math.PI*2; a+=0.4) {
-            let r = l.r + Math.random()*25;
-            ctxBg.lineTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r);
-        }
-        ctxBg.fill();
+        if(Math.hypot(cx,cy-bgCanvas.height)<220 || Math.hypot(cx-bgCanvas.width, cy)<220) return;
+        ctxBg.beginPath(); ctxBg.arc(cx,cy, l.r, 0, Math.PI*2); ctxBg.fill();
     });
-    
-    // Dekorasyon
-    ctxBg.font = "24px Arial"; ctxBg.textAlign="center";
-    for(let i=0;i<20;i++) ctxBg.fillText(Math.random()>.5?"🌲":"⛰️", Math.random()*bgCanvas.width, Math.random()*bgCanvas.height);
 }
 
 function drawInitialAreas() {
-    // Sol Alt (P1)
-    ctxMap.fillStyle = player1.color; 
-    ctxMap.beginPath(); ctxMap.arc(0, mapCanvas.height, 180, 0, Math.PI*2); ctxMap.fill();
-    
-    // Sağ Üst (P2)
-    ctxMap.fillStyle = player2.color; 
-    ctxMap.beginPath(); ctxMap.arc(mapCanvas.width, 0, 180, 0, Math.PI*2); ctxMap.fill();
+    ctxMap.fillStyle = player1.color; ctxMap.beginPath(); ctxMap.arc(0, mapCanvas.height, 150, 0, Math.PI*2); ctxMap.fill();
+    ctxMap.fillStyle = player2.color; ctxMap.beginPath(); ctxMap.arc(mapCanvas.width, 0, 150, 0, Math.PI*2); ctxMap.fill();
 }
 
-// --- ÇİZİM VE LİMİT HESAPLAMA ---
-function getMousePos(e) {
+// --- GİRİŞ CİHAZLARI (TOUCH & MOUSE) ---
+function getPos(e) {
     const r = uiCanvas.getBoundingClientRect();
-    const cx = e.touches ? e.touches[0].clientX : e.clientX;
-    const cy = e.touches ? e.touches[0].clientY : e.clientY;
-    return { x: cx - r.left, y: cy - r.top };
+    let x, y;
+    if (e.touches && e.touches.length > 0) {
+        x = e.touches[0].clientX; y = e.touches[0].clientY;
+    } else {
+        x = e.clientX; y = e.clientY;
+    }
+    return { x: x - r.left, y: y - r.top };
 }
 
-uiCanvas.addEventListener('mousedown', startD); uiCanvas.addEventListener('mousemove', moveD); uiCanvas.addEventListener('mouseup', endD);
-uiCanvas.addEventListener('touchstart', startD, {passive:false}); uiCanvas.addEventListener('touchmove', moveD, {passive:false}); uiCanvas.addEventListener('touchend', endD);
+// Event Listeners (Universal)
+uiCanvas.addEventListener('mousedown', startD);
+uiCanvas.addEventListener('touchstart', startD, {passive: false});
+
+uiCanvas.addEventListener('mousemove', moveD);
+uiCanvas.addEventListener('touchmove', moveD, {passive: false});
+
+uiCanvas.addEventListener('mouseup', endD);
+uiCanvas.addEventListener('touchend', endD);
 
 function startD(e) {
     if(!gameState.started || gameState.canRoll || gameState.isRolling) return;
-    if(e.type==='touchstart') e.preventDefault();
-    const p = getMousePos(e);
+    if(e.cancelable) e.preventDefault(); // Mobilde scrollu engelle
     
+    const p = getPos(e);
+    
+    // Alan Kontrolü
     const px = ctxMap.getImageData(p.x, p.y, 1, 1).data;
-    const isP1 = (gameState.turn === 'p1' && px[0] > px[2]); // Kırmızı
-    const isP2 = (gameState.turn === 'p2' && px[2] > px[0]); // Mavi
+    const isP1 = (gameState.turn === 'p1' && px[0] > px[2]);
+    const isP2 = (gameState.turn === 'p2' && px[2] > px[0]);
     if(!isP1 && !isP2) return;
 
     gameState.isDrawing = true; gameState.pathPoints = [p];
@@ -396,27 +462,23 @@ function startD(e) {
 
 function moveD(e) {
     if(!gameState.isDrawing) return;
-    if(e.type==='touchmove') e.preventDefault();
-    const p = getMousePos(e);
+    if(e.cancelable) e.preventDefault();
+    
+    const p = getPos(e);
     gameState.pathPoints.push(p);
     
-    // Limit Kontrolü (Hata düzeltildi: Gerçek Piksel vs Gerçek Piksel)
-    const currentDrawArea = calculatePolyArea(gameState.pathPoints);
+    const currentArea = calculatePolyArea(gameState.pathPoints);
     const maxAllowed = gameState.scores[gameState.turn] * gameState.limitRatio;
-    const ratio = Math.min(100, (currentDrawArea / maxAllowed) * 100);
+    const ratio = Math.min(100, (currentArea / maxAllowed) * 100);
     
-    const barId = gameState.turn==='p1'?'p1LimitBar':'p2LimitBar';
-    const bar = document.getElementById(barId);
+    const bar = document.getElementById(gameState.turn==='p1'?'p1LimitBar':'p2LimitBar');
     bar.style.width = ratio + '%';
     
-    // Görsel Geri Bildirim
-    if (currentDrawArea > maxAllowed) {
-        bar.style.background = '#e74c3c'; // Kırmızı (Hata)
-        ctxUi.strokeStyle = '#e74c3c';
+    if (currentArea > maxAllowed) {
+        bar.style.background = 'red'; ctxUi.strokeStyle = 'red';
         if(Math.random()>0.9) playSound('limit');
     } else {
-        bar.style.background = '#00b894'; // Yeşil (OK)
-        ctxUi.strokeStyle = '#2d3436';
+        bar.style.background = '#00b894'; ctxUi.strokeStyle = '#2d3436';
     }
 
     ctxUi.clearRect(0,0,uiCanvas.width, uiCanvas.height);
@@ -429,32 +491,28 @@ function endD() {
     if(!gameState.isDrawing) return;
     gameState.isDrawing = false;
     ctxUi.closePath();
-    ctxUi.fillStyle = 'rgba(0,0,0,0.1)'; ctxUi.fill();
     
     const area = calculatePolyArea(gameState.pathPoints);
     const maxAllowed = gameState.scores[gameState.turn] * gameState.limitRatio;
 
-    // Reset Bar
     document.getElementById('p1LimitBar').style.width = '0%'; document.getElementById('p2LimitBar').style.width = '0%';
 
-    // Validasyon
     if(area < 100) { ctxUi.clearRect(0,0,uiCanvas.width, uiCanvas.height); return; }
-    
     if(area > maxAllowed) { 
-        alert("Sınırı aştın! Sadece sahip olduğun kadar alanı riske edebilirsin.");
+        alert("Çok büyük alan seçtin! Sadece gücün kadar alan alabilirsin."); 
         ctxUi.clearRect(0,0,uiCanvas.width, uiCanvas.height); 
         return; 
     }
     
+    ctxUi.fillStyle = 'rgba(0,0,0,0.1)'; ctxUi.fill();
     gameState.canRoll = true;
     const btn = document.getElementById('rollBtn');
     btn.classList.add('ready');
-    // Göstermelik birim (1000'e bölerek sadeleştirdik)
-    btn.innerHTML = `🎲 ZAR AT (Risk: ${Math.floor(area/100)})`;
+    btn.innerHTML = `🎲 ZAR AT`;
     playSound('ready');
 }
 
-// --- ZAR VE SONUÇ ---
+// --- ZAR ---
 document.getElementById('rollBtn').addEventListener('click', () => {
     if(!gameState.canRoll) return;
     gameState.isRolling = true;
@@ -466,33 +524,23 @@ document.getElementById('rollBtn').addEventListener('click', () => {
 
 function animateDice(target) {
     const box = document.getElementById('gameDice');
-    let frame = 0; const duration = 120; // 2 sn
-    let vx = 20, vy = 20; let rx = 0, ry = 0;
-
+    let frame = 0;
+    
     const loop = setInterval(() => {
         frame++;
-        vx *= 0.98; vy *= 0.98; rx += vx; ry += vy;
+        const rx = Math.random()*360 + frame*10;
+        const ry = Math.random()*360 + frame*10;
         
-        // Wobble Effect (Sonlara doğru heyecan)
-        if(frame > duration - 30) {
-            let tx=0, ty=0;
-            if(target==1) {tx=0; ty=0;} if(target==2) {tx=0; ty=180;}
-            if(target==3) {tx=0; ty=-90;} if(target==4) {tx=0; ty=90;}
-            if(target==5) {tx=-90; ty=0;} if(target==6) {tx=90; ty=0;}
-            const w = Math.sin(frame)*15;
-            box.style.transform = `rotateX(${tx+w+720}deg) rotateY(${ty+w+720}deg) scale(1.2)`;
-        } else {
-            box.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) scale(1.2)`;
-            if(frame%10===0) playSound('tick');
-        }
+        box.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) scale(1.1)`;
+        if(frame%5===0) playSound('tick');
 
-        if(frame >= duration) {
+        if(frame >= 60) {
             clearInterval(loop);
             let tx=0, ty=0;
             if(target==1) {tx=0; ty=0;} if(target==2) {tx=0; ty=180;}
             if(target==3) {tx=0; ty=-90;} if(target==4) {tx=0; ty=90;}
             if(target==5) {tx=-90; ty=0;} if(target==6) {tx=90; ty=0;}
-            box.style.transform = `rotateX(${tx+720}deg) rotateY(${ty+720}deg) scale(1)`;
+            box.style.transform = `rotateX(${tx}deg) rotateY(${ty}deg) scale(1)`;
             processResult(target);
         }
     }, 16);
@@ -509,22 +557,21 @@ function processResult(res) {
     switch(res) {
         case 1: scale=1; mode='source-over'; msg="1️⃣ TAM İSABET! Alanı kaptın."; sound='win'; break;
         case 2: scale=1; mode='destination-out'; msg="2️⃣ KAYIP! Seçtiğin yer silindi."; sound='lose'; break;
-        case 3: scale=1.41; mode='source-over'; msg="3️⃣ 2 KAT KAZANÇ! Muazzam büyüme!"; sound='winBig'; break;
-        case 4: scale=1.41; mode='destination-out'; msg="4️⃣ 2 KAT KAYIP! Büyük hasar!"; sound='loseBig'; break;
-        case 5: scale=0.7; mode='source-over'; msg="5️⃣ YARIM KAZANÇ. Olsun, kârdır."; sound='win'; break;
-        case 6: scale=0.7; mode='destination-out'; msg="6️⃣ YARIM KAYIP. Ucuz atlattın."; sound='lose'; break;
+        case 3: scale=1.41; mode='source-over'; msg="3️⃣ 2 KAT KAZANÇ! Büyüyerek aldın!"; sound='win'; break;
+        case 4: scale=1.41; mode='destination-out'; msg="4️⃣ 2 KAT KAYIP! Büyük hasar!"; sound='lose'; break;
+        case 5: scale=0.7; mode='source-over'; msg="5️⃣ KISMİ. Yarısını kazandın."; sound='win'; break;
+        case 6: scale=0.7; mode='destination-out'; msg="6️⃣ ŞANSLI. Sadece yarısı gitti."; sound='lose'; break;
     }
 
     playSound(sound);
     spawnParticles(center.x, center.y, mode==='source-over'?color:'#555', scale*20);
     
-    // Canvas İşlemi
     ctxMap.save();
     ctxMap.translate(center.x, center.y);
-    ctxMap.scale(scale, scale); // Büyütme/Küçültme burada yapılıyor
+    ctxMap.scale(scale, scale);
     ctxMap.translate(-center.x, -center.y);
     
-    ctxMap.globalCompositeOperation = mode; // Silme veya Boyama
+    ctxMap.globalCompositeOperation = mode;
     ctxMap.fillStyle = color;
     ctxMap.beginPath();
     ctxMap.moveTo(gameState.pathPoints[0].x, gameState.pathPoints[0].y);
@@ -535,19 +582,18 @@ function processResult(res) {
     ctxMap.restore();
     ctxMap.globalCompositeOperation = 'source-over';
 
-    // UI Güncelle
-    box.innerHTML = `<b>${player.name} (${res}):</b> ${msg}`;
+    box.innerHTML = `<b>${player.name} (${res})</b><br>${msg}`;
     box.className = mode==='source-over'?'win':'lose';
 
     setTimeout(() => {
         ctxUi.clearRect(0,0,uiCanvas.width, uiCanvas.height);
         gameState.pathPoints = []; gameState.canRoll = false; gameState.isRolling = false;
-        document.getElementById('rollBtn').innerHTML = "ÖNCE ALAN ÇİZ 🖌️";
+        document.getElementById('rollBtn').innerHTML = "ALAN ÇİZ 👇";
         updateScores(); switchTurn();
-    }, 1800);
+    }, 1500);
 }
 
-// --- YARDIMCI ---
+// --- HESAPLAMALAR (DÜZELTİLDİ: Gerçek Piksel vs Gerçek Piksel) ---
 function getCentroid(pts) {
     let x=0, y=0; for(let p of pts){x+=p.x; y+=p.y;}
     return {x:x/pts.length, y:y/pts.length};
@@ -562,39 +608,34 @@ function calculatePolyArea(pts) {
 }
 
 function updateScores() {
-    // Sadece oyun hazırken çalış
-    if (!gameState.readyToPlay && gameState.scores.p1 > 0) return;
+    if (!gameState.readyToPlay) return;
 
-    // Gerçek piksel sayımı (Hassas ölçüm)
+    // Gerçek pikselleri sayıyoruz (Doğru hesap için)
     const d = ctxMap.getImageData(0,0,mapCanvas.width, mapCanvas.height).data;
-    let s1=0, s2=0, step=64; // Örnekleme hızı (performans/doğruluk dengesi)
-    
-    for(let i=0; i<d.length; i+=step) {
+    let s1=0, s2=0;
+    // Step değerini 16 yaptık (daha hassas) -> 4 byte (RGBA) * 4 piksel atlama = 16
+    for(let i=0; i<d.length; i+=16) {
         if(d[i+3]>50) { if(d[i]>d[i+2]) s1++; else s2++; }
     }
     
-    // Piksel sayısını örnekleme oranıyla çarpıp gerçek alana yaklaştır
-    // step = 64 (her 16 pikselden 1'i, rgba 4 byte olduğu için 64/4 = 16)
-    const realS1 = s1 * 16;
-    const realS2 = s2 * 16;
-
-    gameState.scores.p1 = realS1;
-    gameState.scores.p2 = realS2;
+    // Ham piksel sayısı çizimle birebir (x4 çünkü 4 pikselde bir saydık)
+    gameState.scores.p1 = s1 * 4; 
+    gameState.scores.p2 = s2 * 4;
     
-    document.getElementById('p1Score').innerText = Math.floor(realS1/1000) + " br";
-    document.getElementById('p2Score').innerText = Math.floor(realS2/1000) + " br";
+    document.getElementById('p1Score').innerText = Math.floor(s1/100) + " br";
+    document.getElementById('p2Score').innerText = Math.floor(s2/100) + " br";
     
     // Bar
-    const total = realS1 + realS2 + 1;
-    document.getElementById('barP1').style.width = (realS1/total)*100+"%";
-    document.getElementById('barP1').innerText = player1.name + " %" + Math.round((realS1/total)*100);
-    document.getElementById('barP2').style.width = (realS2/total)*100+"%";
-    document.getElementById('barP2').innerText = "%" + Math.round((realS2/total)*100) + " " + player2.name;
+    const total = s1 + s2 + 1;
+    document.getElementById('barP1').style.width = (s1/total)*100+"%";
+    document.getElementById('barP1').innerText = player1.name;
+    document.getElementById('barP2').style.width = (s2/total)*100+"%";
+    document.getElementById('barP2').innerText = player2.name;
 
     // Game Over
     if(gameState.readyToPlay) {
-        if(realS1 < 5000) { alert("🏆 " + player2.name + " KAZANDI!"); location.reload(); }
-        if(realS2 < 5000) { alert("🏆 " + player1.name + " KAZANDI!"); location.reload(); }
+        if(s1 < 1000) { alert("🏆 " + player2.name + " KAZANDI!"); location.reload(); }
+        if(s2 < 1000) { alert("🏆 " + player1.name + " KAZANDI!"); location.reload(); }
     }
 }
 
